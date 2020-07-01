@@ -23,12 +23,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY', '-%^oyb6skmz7*_&5i)eqln+mdcr(wiuq067jx)wr%xrb82-s74')
-# SECRET_KEY = '-%^oyb6skmz7*_&5i)eqln+mdcr(wiuq067jx)wr%xrb82-s74'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+# DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+DEBUG = int(os.environ.get('DJANGO_DEBUG', '1'))
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1:8000', 'wallpaper-apiv1.herokuapp.com']
 
 
 # Application definition
@@ -56,7 +56,6 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
     )
 }
 

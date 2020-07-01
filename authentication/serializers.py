@@ -8,7 +8,7 @@ from drf_yasg.utils import swagger_serializer_method
 User = get_user_model()
 
 
-class ResponseSerializer(serializers.ModelSerializer):
+class ResponseSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=500)
 
 

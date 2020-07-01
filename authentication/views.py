@@ -9,7 +9,6 @@ User = get_user_model()
 
 
 class LoginView(generics.GenericAPIView):
-    permission_classes = (permissions.AllowAny,)
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
@@ -18,14 +17,13 @@ class LoginView(generics.GenericAPIView):
             user = serializer.validated_data['user']
             token = create_auth_token(user)
             response = ResponseSerializer({'token': token})
-            return Response(respomse.data, status.HTTP_200_OK)
+            return Response(response.data, status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RegisterView(generics.CreateAPIView):
     model = User
-    permission_classes = (permissions.AllowAny,)
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
@@ -34,4 +32,4 @@ class RegisterView(generics.CreateAPIView):
         self.perform_create(serializer)
         token = create_auth_token(user=serializer.instance)
         response = ResponseSerializer({'token': token})
-        return Response(respomse.data, status.HTTP_201_CREATED)
+        return Response(response.data, status.HTTP_201_CREATED)

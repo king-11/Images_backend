@@ -1,30 +1,29 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, authentication
 from rest_framework.response import Response
 
 from .serializer import *
 from .models import *
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsOwnerOrReadOnlyImages
 
 
 class TeamView(generics.ListAPIView):
     queryset = photographer.objects.filter(member=True)
     serializer_class = MemberSerializer
-    permissions = (permissions.AllowAny,)
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):
     queryset = photographer.objects.all()
     serializer_class = ProfileSerializer
-    permissions = (IsOwnerOrReadOnly,)
+    permission_classes = (IsOwnerOrReadOnly,)
 
 
 class ImagesView(generics.ListCreateAPIView):
     queryset = images.objects.all()
     serializer_class = ImageSerializer
-    permissions = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class ImageView(generics.RetrieveUpdateDestroyAPIView):
     queryset = images.objects.all()
     serializer_class = ImageSerializer
-    permissions = (IsOwnerOrReadOnly,)
+    permission_classes = (IsOwnerOrReadOnlyImages,)
