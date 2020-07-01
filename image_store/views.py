@@ -18,12 +18,12 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 
 class ImagesView(generics.ListCreateAPIView):
-    queryset = images.objects.all()
+    queryset = images.objects.filter(verified=True)
     serializer_class = ImageSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class ImageView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = images.objects.all()
+    queryset = images.objects.filter()
     serializer_class = ImageSerializer
     permission_classes = (IsOwnerOrReadOnlyImages,)
