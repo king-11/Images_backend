@@ -18,7 +18,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 
 class ImagesView(generics.ListCreateAPIView):
-    queryset = images.objects.filter(verified=True)
+    queryset = images.objects.filter(verified=True).order_by('likes')
     serializer_class = ImageSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
