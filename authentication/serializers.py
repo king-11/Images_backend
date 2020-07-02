@@ -50,9 +50,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source='get_full_name', required=False)
-
     class Meta:
         model = User
-        fields = ['name', 'email', 'username']
-        read_only_fields = fields
+        fields = ['username',
+                  'email', 'id', 'first_name', 'last_name']

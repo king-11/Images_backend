@@ -3,7 +3,7 @@ from .utils import create_auth_token
 from rest_framework.response import Response
 from rest_framework import generics, permissions, status
 from .serializers import (
-    LoginSerializer, RegisterSerializer, ResponseSerializer)
+    LoginSerializer, RegisterSerializer, ResponseSerializer, UserSerializer)
 
 User = get_user_model()
 
@@ -33,3 +33,12 @@ class RegisterView(generics.CreateAPIView):
         token = create_auth_token(user=serializer.instance)
         response = ResponseSerializer({'token': token})
         return Response(response.data, status.HTTP_201_CREATED)
+
+
+class UserView(generics.RetrieveAPIView):
+    model = User
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        return self.request.user
