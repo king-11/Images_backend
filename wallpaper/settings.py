@@ -14,7 +14,6 @@ import os
 import django_heroku
 import dj_database_url
 
-from google.oauth2 import service_account
 import firebase_admin
 from firebase_admin import credentials
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)

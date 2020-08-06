@@ -26,10 +26,12 @@ class LoginSerializer(serializers.Serializer):
             jwt = self.validate_access_token(id_token)
             uid = jwt['uid']
             provider = FirebaseAPI.get_provider(jwt)
+
             try:
                 account = VerifiedAccount.objects.get(pk=uid)
             except VerifiedAccount.DoesNotExist:
                 raise serializers.ValidationError('No such account exists')
+
             user = account.user
             # add the verification status to the validated data
             attrs['is_verified'] = account.get_verified_status()

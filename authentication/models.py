@@ -27,7 +27,7 @@ class VerifiedAccount(models.Model):
     )
 
     uid = models.CharField(max_length=64, primary_key=True, editable=False)
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         User, on_delete=models.CASCADE,
         related_name='verified_account', related_query_name='account')
     provider = models.CharField(choices=AUTH_PROVIDERS_CHOICE, max_length=15)
@@ -36,7 +36,7 @@ class VerifiedAccount(models.Model):
 
     class Meta:
         unique_together = ('provider', 'provider_uid')
-        app_label = 'Auth'
+        app_label = 'authentication'
 
     def __str__(self):
         return f'{self.user} from {self.provider}'
