@@ -1,12 +1,10 @@
+from firebase_admin.auth import InvalidIdTokenError, RevokedIdTokenError
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from firebase_admin import auth
 from rest_framework.status import HTTP_422_UNPROCESSABLE_ENTITY
 from rest_framework.exceptions import ValidationError
-import requests
-import json
-from django.conf import settings
 
 
 def create_auth_token(user):
@@ -28,7 +26,7 @@ class FirebaseAPI:
         try:
             decoded_token = auth.verify_id_token(token)
             return decoded_token
-        except ValueError:
+        except (InvalidIdTokenError, RevokedIdTokenError) as e:
             raise ValidationError(
                 'Invalid Firebase ID Token.', HTTP_422_UNPROCESSABLE_ENTITY)
 
