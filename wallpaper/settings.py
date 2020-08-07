@@ -107,7 +107,7 @@ DATABASES = {
     }
 }
 
-db_from_env = dj_database_url.config(conn_max_age=500)
+db_from_env = dj_database_url.config(conn_max_age=0)
 DATABASES['default'].update(db_from_env)
 
 # Password validation
@@ -159,20 +159,21 @@ SWAGGER_SETTINGS = {
     }
 }
 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 if not DEBUG:
-    bufferSize = 64*1024
-    encFileSize = stat("service_account.json.aes").st_size
+    encFileSize = int(os.environ.get('SERVICE_ACCOUNT_ENC_SIZE'))
     SERVICE_ACCOUNT_DECRYPT_KEY = os.environ.get('SERVICE_ACCOUNT_DECRYPT_KEY')
     with open("service_account.json.aes", "rb") as encryptedfile:
         with open("service_account.json", "wb") as decryptedfile:
             pyAesCrypt.decryptStream(
-                encryptedfile, decryptedfile, SERVICE_ACCOUNT_DECRYPT_KEY, bufferSize, encFileSize)
+                encryptedfile, decryptedfile, SERVICE_ACCOUNT_DECRYPT_KEY, 64*1024, encFileSize)
 
 cred = credentials.Certificate(os.path.join(BASE_DIR, 'service_account.json'))
 firebase_admin.initialize_app(cred)
 
-STATIC_URL = '/static/'
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 django_heroku.settings(locals())
