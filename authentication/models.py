@@ -27,7 +27,7 @@ class VerifiedAccount(models.Model):
     )
 
     uid = models.CharField(max_length=64, primary_key=True, editable=False)
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         User, on_delete=models.CASCADE,
         related_name='verified_account', related_query_name='account')
     provider = models.CharField(choices=AUTH_PROVIDERS_CHOICE, max_length=15)
