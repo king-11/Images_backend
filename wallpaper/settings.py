@@ -13,9 +13,12 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import django_heroku
 import dj_database_url
+import pyAesCrypt
+
 
 import firebase_admin
 from firebase_admin import credentials
+from os import stat
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -156,7 +159,17 @@ SWAGGER_SETTINGS = {
     }
 }
 
-cred = credentials.Certificate(os.path.join(BASE_DIR, 'servicekey.json'))
+
+if not DEBUG:
+    bufferSize = 64*1024
+    encFileSize = stat("service_account.json.aes").st_size
+    SERVICE_ACCOUNT_DECRYPT_KEY = os.environ.get('SERVICE_ACCOUNT_DECRYPT_KEY')
+    with open("service_account.json.aes", "rb") as encryptedfile:
+        with open("service_account.json", "wb") as decryptedfile:
+            pyAesCrypt.decryptStream(
+                encryptedfile, decryptedfile, SERVICE_ACCOUNT_DECRYPT_KEY, bufferSize, encFileSize)
+
+cred = credentials.Certificate(os.path.join(BASE_DIR, 'service_account.json'))
 firebase_admin.initialize_app(cred)
 
 STATIC_URL = '/static/'
