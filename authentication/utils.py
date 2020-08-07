@@ -2,18 +2,9 @@ from firebase_admin.auth import InvalidIdTokenError, RevokedIdTokenError
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-<<<<<<< HEAD
-=======
 from firebase_admin import auth
 from rest_framework.status import HTTP_422_UNPROCESSABLE_ENTITY
 from rest_framework.exceptions import ValidationError
-<<<<<<< HEAD
-import requests
-import json
-from django.conf import settings
->>>>>>> 5d6e619... firebase auth added
-=======
->>>>>>> e1d3174... social authentcation configured
 
 
 def create_auth_token(user):
