@@ -43,12 +43,11 @@ class RegisterView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         self.user = self.serializer.save()
-        self.token = create_auth_token(user=serializer.instance)
+        self.token = create_auth_token(self.user)
 
     def get_response(self):
         response = ResponseSerializer({
             'token': self.token,
-            # 'verification_status':self.user.verified_account.is_verified,
         })
         return Response(response.data, status=status.HTTP_201_CREATED)
 
