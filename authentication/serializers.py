@@ -1,11 +1,8 @@
 from rest_framework import serializers
-from .utils import create_auth_token, get_and_authenticate_user
-from django.contrib.auth import get_user_model
-from rest_framework.authtoken.models import Token
-from rest_framework.validators import UniqueValidator
-from drf_yasg.utils import swagger_serializer_method
+from .utils import FirebaseAPI
+from .models import *
 
-User = get_user_model()
+from rest_framework.exceptions import ParseError
 
 
 class ResponseSerializer(serializers.Serializer):
@@ -13,39 +10,86 @@ class ResponseSerializer(serializers.Serializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)
-    password = serializers.CharField(write_only=True, required=True)
+    id_token = serializers.CharField(max_length=2400)
+    provider_token = serializers.CharField(max_length=2400, required=False)
 
-    def validate(self, data):
-        username = data.get('username', None)
-        password = data.get('password', None)
+    def validate_access_token(self, access_token):
+        return FirebaseAPI.verify_id_token(access_token)
 
-        if username and password:
-            user = get_and_authenticate_user(username, password)
-            if not user.is_active:
-                error = "User account is disabled"
-                raise serializers.ValidationError(error)
-            data['user'] = user
-            return data
+    def validate(self, attrs):
+        id_token = attrs.get('id_token', None)
+        provider_token = attrs.get('provider_token', None)
+        user = None
+        if id_token:
+            jwt = self.validate_access_token(id_token)
+            uid = jwt['uid']
+            provider = FirebaseAPI.get_provider(jwt)
+
+            try:
+                account = VerifiedAccount.objects.get(pk=uid)
+            except VerifiedAccount.DoesNotExist:
+                raise serializers.ValidationError('No such account exists')
+
+            user = account.user
+            # add the verification status to the validated data
+            attrs['is_verified'] = account.get_verified_status()
+            if provider_token:
+                account.provider_token = provider_token
+                account.save()
         else:
-            error = 'Must include username and password'
-            raise serializers.ValidationError(error)
+            raise ParseError('Provide access_token or username to continue.')
+        # Did we get back an active user?
+        if user:
+            if not user.is_active:
+                raise serializers.ValidationError('User account is disabled.')
+        else:
+            raise serializers.ValidationError(
+                'Unable to log in with provided credentials.')
+        attrs['user'] = user
+        return attrs
 
 
-class RegisterSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(
-        validators=[UniqueValidator(queryset=User.objects.all())])
+class RegisterSerializer(serializers.Serializer):
+    id_token = serializers.CharField(max_length=2400, required=True)
+    first_name = serializers.CharField(max_length=40, allow_blank=False)
+    last_name = serializers.CharField(
+        max_length=100, allow_blank=True, required=False)
 
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password', 'first_name', 'last_name')
-        extra_kwargs = {
-            'password': {'write_only': True, 'min_length': 8, 'required': True, 'style': {'input_type': 'password'}},
-            'username': {'required': True},
-        }
+    def validate_id_token(self, access_token):
+        return FirebaseAPI.verify_id_token(access_token)
 
-    def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
+    def validate_first_name(self, name):
+        if name == None or name == '':
+            raise serializers.ValidationError("First Name cannot be blank")
+        return name
+
+    def get_user(self, data, jwt):
+        user = User()
+        uid = jwt['uid']
+        email = jwt.get('email', '')
+        user.username = uid
+        user.email = email
+        user.first_name = data.get('first_name')
+        user.last_name = data.get('last_name', "")
+        return user
+
+    def save(self):
+        data = self.validated_data
+        jwt = data.get('id_token')
+        uid = jwt['uid']
+        provider = FirebaseAPI.get_provider(jwt)
+        user = self.get_user(data, jwt)
+        try:
+            user.validate_unique()
+        except Exception as e:
+            raise serializers.ValidationError(detail="User already exists")
+        user.save()
+        account, _ = VerifiedAccount.objects.get_or_create(
+            uid=uid, user=user, provider=provider)
+
+        if provider == VerifiedAccount.AUTH_EMAIL_PROVIDER:
+            account.is_verified = False
+            account.save()
         return user
 
 
