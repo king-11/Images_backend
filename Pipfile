@@ -17,6 +17,7 @@ drf-yasg = "*"
 django-cors-headers = "*"
 whitenoise = "*"
 dj-database-url = "*"
+pyaescrypt = "*"
 
 [requires]
 python_version = "3.8"
