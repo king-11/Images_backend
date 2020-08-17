@@ -7,6 +7,9 @@ from rest_framework.exceptions import ParseError
 
 class ResponseSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=500)
+    user_id = serializers.PrimaryKeyRelatedField(
+        required=True, queryset=User.objects.all())
+    verification_status = serializers.BooleanField()
 
 
 class LoginSerializer(serializers.Serializer):
