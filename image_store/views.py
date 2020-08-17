@@ -22,6 +22,13 @@ class ImagesView(generics.ListCreateAPIView):
     serializer_class = ImageSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+    def get_queryset(self):
+        queryset = images.objects.filter(verified=True).order_by('likes')
+        user_id = self.request.query_params.get('user_id', None)
+        if user_id is not None:
+            queryset = queryset.filter(pk=user_id)
+        return queryset
+
     def create(self, request):
         self.request = request
         self.serializer = self.get_serializer(
