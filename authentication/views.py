@@ -17,13 +17,15 @@ class LoginView(generics.GenericAPIView):
 
     def login(self):
         validated_data = self.serializer.validated_data
-
+        self.verification_status = validated_data['is_verified']
         self.user = validated_data['user']
         self.token = create_auth_token(self.user)
 
     def get_response(self):
         response = ResponseSerializer({
+            'user_id': self.user.pk,
             'token': self.token,
+            'verification_status': self.verification_status,
         })
         return Response(response.data, status=status.HTTP_200_OK)
 
@@ -47,7 +49,9 @@ class RegisterView(generics.CreateAPIView):
 
     def get_response(self):
         response = ResponseSerializer({
+            'user_id': self.user.pk,
             'token': self.token,
+            'verification_status': self.user.verified_account.is_verified,
         })
         return Response(response.data, status=status.HTTP_201_CREATED)
 
