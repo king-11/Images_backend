@@ -13,11 +13,12 @@ GENDER_CHOICES = (
 
 
 class photographer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    instaHandle = models.URLField()
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE)
+    instaHandle = models.URLField(blank=True)
     home = models.CharField(max_length=255, blank=True)
     instituition = models.CharField(max_length=255, blank=True)
-    profile_pic = models.URLField(null=True)
+    profile_pic = models.URLField(null=True, blank=True)
     member = models.BooleanField(default=False)
     bio = models.TextField(max_length=255, blank=True)
     gender = models.CharField(
