@@ -34,15 +34,20 @@ def create_photographer_profile(sender, instance=None, created=False, **kwargs):
         photographer.objects.get_or_create(user=instance)
 
 
+class tag(models.Model):
+    name = models.CharField(max_length=100)
+
+
 class images(models.Model):
     link = models.URLField(unique=True)
     verified = models.BooleanField(default=False)
     likes = models.IntegerField(default=0)
-    person = models.ForeignKey(photographer, on_delete=models.CASCADE)
+    person = models.ForeignKey(
+        photographer, on_delete=models.CASCADE, related_name='submissions')
     place = models.CharField(
         max_length=100, blank=True, default=' ')
-    tag = models.TextField(max_length=255, blank=True, default=' ')
+    tag = models.ManyToManyField(tag, related_name='tagged_images', blank=True)
 
     def __str__(self):
-        return f'clicked at {self.place} by {self.person.user.username}'
+        return f'clicked at {self.place} by {self.person.user.email}'
 # Create your models here.
