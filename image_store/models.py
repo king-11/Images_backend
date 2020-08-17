@@ -51,3 +51,16 @@ class images(models.Model):
     def __str__(self):
         return f'clicked at {self.place} by {self.person.user.email}'
 # Create your models here.
+
+
+class Likes(models.Model):
+    image = models.ForeignKey(
+        images, on_delete=models.CASCADE, related_name='likes_model')
+    liked_by = models.ManyToManyField(
+        User, related_name='liked_images', blank=True)
+
+
+@receiver(post_save, sender=images)
+def create_like_object(sender, instance=None, created=False, **kwargs):
+    if created:
+        Likes.objects.get_or_create(image=instance)
