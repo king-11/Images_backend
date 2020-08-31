@@ -53,12 +53,14 @@ INSTALLED_APPS = [
     'corsheaders',
     'image_store',
     'authentication',
+    'debug_toolbar'
 ]
 
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -126,6 +128,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost'
 ]
 
 

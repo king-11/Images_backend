@@ -1,10 +1,11 @@
 
 from django.contrib import admin
 from django.urls import path, include
-from django.conf.urls import url
+from django.conf import urls, settings
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -27,3 +28,9 @@ urlpatterns = [
     path('auth/', include('authentication.urls')),
     path('api/', include('image_store.urls')),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
