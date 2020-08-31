@@ -32,18 +32,13 @@ class PersonSerializer(serializers.ModelSerializer):
 
 
 class ImageSerializer(serializers.ModelSerializer):
-    photographer_name = serializers.SerializerMethodField('get_name')
     person = PersonSerializer(required=False)
     tag = TagSerializer(many=True, required=False)
-
-    def get_name(self, obj):
-        return obj.person.user.first_name + obj.person.user.last_name
 
     class Meta:
         model = images
         fields = '__all__'
-        read_only_fields = ['person', 'id',
-                            'photographer_name', 'likes', 'verified']
+        read_only_fields = ['person', 'id', 'likes', 'verified']
 
     def update(self, instance, validated_data):
         tag_list = validated_data.pop('tag', [])
