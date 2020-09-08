@@ -19,6 +19,8 @@ whitenoise = "*"
 dj-database-url = "*"
 firebase-admin = "*"
 pyaescrypt = "*"
+django-filter = "*"
+django-debug-toolbar = "*"
 
 [requires]
 python_version = "3.8"

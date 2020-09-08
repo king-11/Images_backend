@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'image_store',
     'authentication',
-    'debug_toolbar'
+    'debug_toolbar',
+    'django_filters'
 ]
 
 
