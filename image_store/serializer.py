@@ -41,7 +41,7 @@ class ImageSerializer(serializers.ModelSerializer):
         read_only_fields = ['person', 'id', 'likes', 'verified']
 
     def update(self, instance, validated_data):
-        tag_list = validated_data.pop('tag', [])
+        tag_list = validated_data.pop('tag', None)
 
         for data in validated_data:
             setattr(instance, data, validated_data[data])
@@ -54,7 +54,7 @@ class ImageSerializer(serializers.ModelSerializer):
         return instance
 
     def create(self):
-        tag_list = self.validated_data.pop('tag', [])
+        tag_list = self.validated_data.pop('tag', None)
         data = self.validated_data
 
         data['person'] = self.context['request'].user.photographer
