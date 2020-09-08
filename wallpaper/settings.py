@@ -182,6 +182,9 @@ if not DEBUG:
 cred = credentials.Certificate(os.path.join(BASE_DIR, 'service_account.json'))
 firebase_admin.initialize_app(cred)
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+
 django_heroku.settings(locals())
