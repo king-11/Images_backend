@@ -1,9 +1,13 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
 from .serializer import *
 from .models import *
 from .permissions import IsOwnerOrReadOnly, IsOwnerOrReadOnlyImages
+from .filters import ImageFilter
+from .paginations import ImageListPagination
 
 
 class TeamView(generics.ListAPIView):
@@ -18,16 +22,11 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 
 class ImagesView(generics.ListCreateAPIView):
-    queryset = images.objects.filter(verified=True).order_by('likes')
+    queryset = images.objects.prefetch_related('tag').select_related(
+        'person__user').filter(verified=True).order_by('-likes')
     serializer_class = ImageSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def get_queryset(self):
-        queryset = images.objects.filter(verified=True).order_by('likes')
-        user_id = self.request.query_params.get('user_id', None)
-        if user_id is not None:
-            queryset = queryset.filter(pk=user_id)
-        return queryset
+    pagination_class = ImageListPagination
 
     def create(self, request):
         self.request = request
@@ -55,7 +54,7 @@ class LikeUpdateView(generics.UpdateAPIView):
         if not image_id:
             return Response(data={"error": "Image Id is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        instance = get_object_or_404(Likes, image__id=image_id)
+        get_object_or_404(Likes, image__id=image_id)
         serializer = self.get_serializer(
             data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
