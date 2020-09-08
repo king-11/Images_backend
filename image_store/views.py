@@ -3,6 +3,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 from .serializer import *
 from .models import *
 from .permissions import IsOwnerOrReadOnly, IsOwnerOrReadOnlyImages
@@ -36,6 +38,16 @@ class ImagesView(generics.ListCreateAPIView):
 
         self.serializer.create()
         return Response(status=status.HTTP_201_CREATED)
+
+
+class ImageFilterView(generics.ListAPIView):
+    queryset = images.objects.prefetch_related('tag').select_related(
+        'person__user').filter(verified=True).order_by('-likes')
+    serializer_class = ImageSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ImageFilter
+    pagination_class = ImageListPagination
 
 
 class ImageView(generics.RetrieveUpdateDestroyAPIView):
