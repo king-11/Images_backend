@@ -24,10 +24,12 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 
 class ImagesView(generics.ListCreateAPIView):
-    queryset = images.objects.prefetch_related('tag').select_related(
-        'person__user').filter(verified=True).order_by('-likes')
+    queryset = images.objects.select_related(
+        'person', 'person__user').prefetch_related('tag').filter(verified=True).order_by('-likes')
     serializer_class = ImageSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ImageFilter
     pagination_class = ImageListPagination
 
     def create(self, request):
@@ -38,16 +40,6 @@ class ImagesView(generics.ListCreateAPIView):
 
         self.serializer.create()
         return Response(status=status.HTTP_201_CREATED)
-
-
-class ImageFilterView(generics.ListAPIView):
-    queryset = images.objects.prefetch_related('tag').select_related(
-        'person__user').filter(verified=True).order_by('-likes')
-    serializer_class = ImageSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = ImageFilter
-    pagination_class = ImageListPagination
 
 
 class ImageView(generics.RetrieveUpdateDestroyAPIView):
