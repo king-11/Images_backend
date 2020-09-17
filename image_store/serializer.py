@@ -28,7 +28,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = photographer
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'instaHandle')
 
 
 class ImageSerializer(serializers.ModelSerializer):
