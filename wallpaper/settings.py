@@ -176,7 +176,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 if not DEBUG:
-    encFileSize = int(os.environ.get('SERVICE_ACCOUNT_ENC_SIZE'))
+    encFileSize = int(os.environ.get('SERVICE_ACCOUNT_ENC_SIZE', 0))
     SERVICE_ACCOUNT_DECRYPT_KEY = os.environ.get('SERVICE_ACCOUNT_DECRYPT_KEY')
     with open("service_account.json.aes", "rb") as encryptedfile:
         with open("service_account.json", "wb") as decryptedfile:

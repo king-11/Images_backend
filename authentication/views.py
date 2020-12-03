@@ -23,7 +23,7 @@ class LoginView(generics.GenericAPIView):
 
     def get_response(self):
         response = ResponseSerializer({
-            'user_id': self.user.pk,
+            'user_id': self.user,
             'token': self.token,
             'verification_status': self.verification_status,
         })
@@ -43,13 +43,13 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = (permissions.AllowAny,)
 
-    def perform_create(self, serializer):
+    def perform_create(self):
         self.user = self.serializer.save()
         self.token = create_auth_token(self.user)
 
     def get_response(self):
         response = ResponseSerializer({
-            'user_id': self.user.pk,
+            'user_id': self.user,
             'token': self.token,
             'verification_status': self.user.verified_account.is_verified,
         })
@@ -59,7 +59,7 @@ class RegisterView(generics.CreateAPIView):
         self.serializer = self.get_serializer(
             data=request.data, context={'request': request})
         self.serializer.is_valid(raise_exception=True)
-        self.perform_create(self.serializer)
+        self.perform_create()
 
         return self.get_response()
 

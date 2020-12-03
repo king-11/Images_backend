@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .utils import FirebaseAPI
 from .models import *
-
 from rest_framework.exceptions import ParseError
 
 
