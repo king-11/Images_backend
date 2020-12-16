@@ -12,7 +12,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField('get_name')
 
     def get_name(self, obj):
-        return obj.user.first_name + obj.user.last_name
+        return obj.user.first_name + " " + obj.user.last_name
 
     class Meta:
         model = photographer
@@ -24,7 +24,7 @@ class PersonSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField('get_name')
 
     def get_name(self, obj):
-        return obj.user.first_name + obj.user.last_name
+        return obj.user.first_name + " " + obj.user.last_name
 
     class Meta:
         model = photographer
@@ -70,7 +70,7 @@ class MemberSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField('get_name')
 
     def get_name(self, obj):
-        return obj.user.first_name + obj.user.last_name
+        return obj.user.first_name + " " + obj.user.last_name
 
     class Meta:
         model = photographer
