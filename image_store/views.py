@@ -25,7 +25,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 class ImagesView(generics.ListCreateAPIView):
     queryset = images.objects.select_related(
-        'person', 'person__user').prefetch_related('tag').filter(verified=True).order_by('-likes')
+        'person', 'person__user').prefetch_related('tag').filter(verified=True).order_by('id')
     serializer_class = ImageSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = [DjangoFilterBackend]
@@ -46,21 +46,3 @@ class ImageView(generics.RetrieveUpdateDestroyAPIView):
     queryset = images.objects.all()
     serializer_class = ImageSerializer
     permission_classes = (IsOwnerOrReadOnlyImages,)
-
-
-class LikeUpdateView(generics.UpdateAPIView):
-    queryset = Likes.objects.all()
-    serializer_class = LikeSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def update(self, request):
-        image_id = request.data.get('image', None)
-        if not image_id:
-            return Response(data={"error": "Image Id is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        get_object_or_404(Likes, image__id=image_id)
-        serializer = self.get_serializer(
-            data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        serializer.update()
-        return Response(status=status.HTTP_206_PARTIAL_CONTENT)

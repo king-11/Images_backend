@@ -6,5 +6,4 @@ urlpatterns = [
     path('', ImagesView.as_view()),
     path('image/<int:pk>/', ImageView.as_view()),
     path('profile/<int:pk>/', ProfileView.as_view()),
-    path('image/like/', LikeUpdateView.as_view())
 ]

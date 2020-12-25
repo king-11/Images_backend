@@ -38,7 +38,7 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = images
         fields = '__all__'
-        read_only_fields = ['person', 'id', 'likes', 'verified']
+        read_only_fields = ['person', 'id', 'verified']
 
     def update(self, instance, validated_data):
         tag_list = validated_data.pop('tag', None)
@@ -75,22 +75,3 @@ class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = photographer
         fields = ('id', 'home', 'name', 'profile_pic', 'instaHandle')
-
-
-class LikeSerializer(serializers.Serializer):
-    image = serializers.PrimaryKeyRelatedField(
-        queryset=images.objects.all(), required=True)
-    users = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), required=False, many=True)
-
-    def update(self):
-        users = self.validated_data.get('users', None)
-        image = self.validated_data.get('image')
-        instance = Likes.objects.get(image=image)
-        for user in users:
-            instance.liked_by.add(user)
-        instance.save()
-
-        image.likes = instance.liked_by.all().count()
-        image.save()
-        return instance
