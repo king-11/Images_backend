@@ -47,6 +47,7 @@ class ImageSerializer(serializers.ModelSerializer):
             setattr(instance, data, validated_data[data])
 
         for tag_val in tag_list:
+            tag_val = tag_val.lower()
             tag_val, _ = tag.objects.get_or_create(**tag_val)
             instance.tag.add(tag_val)
 
@@ -60,6 +61,7 @@ class ImageSerializer(serializers.ModelSerializer):
         data['person'] = self.context['request'].user.photographer
         image = images.objects.create(**data)
         for tag_val in tag_list:
+            tag_val = tag_val.lower()
             tag_val, _ = tag.objects.get_or_create(**tag_val)
             image.tag.add(tag_val)
         image.save()
