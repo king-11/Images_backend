@@ -14,7 +14,7 @@
 
 ### About
 
-This project allows artist from various fields to store their work securely as well as provide people with good material as the content is verified before its displayed to users by admin. Basic rest framework token authentication is enabled future goals are to create a frontend site  using nuxt js that will also include firebase authentication. It will enable anyone to see the content download it appreciate the owner by visiting their instagram handles and reading about them. As well a Teams page to showcase the team members.
+This project allows artist from various fields to store their work securely as well as provide people with good material as the content is verified before its displayed to users by admin. Basic rest framework token authentication is enabled with frontend built using NuxtJS for optimized seo performance available at [Link](pictorial.netlify.app) . It will enable anyone to see the content download it appreciate the owner by visiting their instagram handles and reading about them. As well a Teams page to showcase the team members.
 
 ### Packages used:
 - [Django](https://pypi.org/project/Django/)
